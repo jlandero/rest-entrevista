@@ -47,5 +47,6 @@ public class UserServiceTest {
     	user.setPhone("+56998958699");
     	user.setUsername("algo");    	
     	assertThat(userService.saveUser(user)).isNotNull();
-    }       
+    }
+    
 }

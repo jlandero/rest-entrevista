@@ -3,7 +3,10 @@ package cl.ionix.rest.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validation {
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class Utility {
 	
 	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 
 		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -30,5 +33,22 @@ public class Validation {
 				S=(S+T%10*(9-M++%6))%11;
 			return ( S > 0 ) ? String.valueOf(S-1) : "k";		
 		}
+		
+		public static String mapeoNuevoObjeto (String responseServices, long timeTotal) {
+			
+			JsonObject jsonObject = JsonParser.parseString(responseServices).getAsJsonObject();			
+			JsonObject resultObject = jsonObject.getAsJsonObject("result");
+			jsonObject.remove("result");
+			
+			//JsonObject elapsedTime = new JsonObject();
+			jsonObject.addProperty("elapsedTime", timeTotal);
+			
+			JsonObject items = new JsonObject();
+			items.addProperty("registerCount", resultObject.getAsJsonArray("items").size());
+		
+			jsonObject.add("result", items);
+			return jsonObject.toString();
+			
+		}		
 
 }

@@ -21,7 +21,7 @@ import cl.ionix.rest.error.IternalServerErrorException;
 import cl.ionix.rest.model.User;
 import cl.ionix.rest.repository.UserRepository;
 import cl.ionix.rest.service.RestService;
-import cl.ionix.rest.util.Validation;
+import cl.ionix.rest.util.Utility;
 
 @Service
 public class RestServiceImpl implements RestService{
@@ -42,7 +42,7 @@ public class RestServiceImpl implements RestService{
 	@Override
 	public List<User> userByEmail(String email) {
 		
-		if (!Validation.validateEmail(email))
+		if (!Utility.validateEmail(email))
 			throw new BadRequestException("email invalido");
 		
 		return userRepository.findByEmail(email);
@@ -56,12 +56,14 @@ public class RestServiceImpl implements RestService{
 	@Override
 	public String callExternalApi(String rut) throws GeneralSecurityException {
 		
-		if (!Validation.validaRut(rut))
+		if (!Utility.validaRut(rut))
 			throw new BadRequestException("rut invalido");
-				
-		
+						
 		String rutEnc = null;
 		String responseServices = null;
+		String jsonObject = null;
+		long timeStart, timeEnd, timeTotal;
+		
 		try {
 		
 			DESKeySpec desKeySpec = new DESKeySpec(key.getBytes(StandardCharsets.UTF_8));
@@ -76,12 +78,23 @@ public class RestServiceImpl implements RestService{
 		}		
 	    RestTemplate restTemplate = new RestTemplate();
 	    try {
+	    	
+	    	timeStart = System.currentTimeMillis();			
 	    	responseServices = restTemplate.getForObject(url+rutEnc, String.class);
+	    	timeEnd = System.currentTimeMillis();
+	    	timeTotal =  ( timeEnd - timeStart );	    		    	
+
 	    } catch (Exception e) {
 			throw new IternalServerErrorException("Error Llamado api externa : "+ e.getMessage());
 		}
 	    
-	    return responseServices;
+	    try {
+	    	jsonObject = Utility.mapeoNuevoObjeto(responseServices, timeTotal);
+	    }catch (Exception e) {
+	    	throw new IternalServerErrorException("Error generando nuevo objeto : "+ e.getMessage());
+	    }
+	    
+	    return jsonObject;
 	}
 
 }
