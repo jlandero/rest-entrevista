@@ -45,5 +45,4 @@ public class UtilityTest {
 		String responseServices = "{\"responseCode\":0,\"description\":\"OK\",\"result\":{\"items2\":[{\"name\":\"John\",\"detail\":{\"email\":\"jdoe@gmail.com\",\"phone_number\":\"+130256897875\"}},{\"name\":\"Anna\",\"detail\":{\"email\":\"asmith@gmail.com\",\"phone_number\":\"+5689874521\"}},{\"name\":\"Peter\",\"detail\":{\"email\":\"pjones@gmail.com\",\"phone_number\":\"+668978542365\"}}]}}";
 		Utility.mapeoNuevoObjeto(responseServices, 0);
     }
-
 }

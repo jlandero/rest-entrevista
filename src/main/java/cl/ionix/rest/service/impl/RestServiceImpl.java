@@ -32,7 +32,9 @@ public class RestServiceImpl implements RestService{
 	@Value("${external.service.url}")
 	private String url;
 	@Value("${external.service.key}")
-	private String key;
+	private String key;	
+	@Value("${external.service.type}")
+	private String type;
 
 	@Override
 	public List<User> allUsers() {
@@ -67,10 +69,10 @@ public class RestServiceImpl implements RestService{
 		try {
 		
 			DESKeySpec desKeySpec = new DESKeySpec(key.getBytes(StandardCharsets.UTF_8));
-	        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+	        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(type);
 	        SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
 	        byte[] dataBytes = rut.getBytes(StandardCharsets.UTF_8);
-	        Cipher cipher2 = Cipher.getInstance("DES");
+	        Cipher cipher2 = Cipher.getInstance(type);
 	        cipher2.init(Cipher.ENCRYPT_MODE, secretKey);
 	        rutEnc = Base64.getEncoder().encodeToString(cipher2.doFinal(dataBytes));
 		} catch (GeneralSecurityException e) {

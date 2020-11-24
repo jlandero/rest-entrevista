@@ -2,6 +2,8 @@ package cl.ionix.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.security.GeneralSecurityException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +47,21 @@ public class UserServiceTest {
     	user.setEmail("algo@algo.com");
     	user.setName("algo");
     	user.setPhone("+56998958699");
-    	user.setUsername("algo");    	
-    	assertThat(userService.saveUser(user)).isNotNull();
+    	user.setUsername("algo");
+    	
+    	User save = userService.saveUser(user);
+    	assertThat(save).isNotNull();
+    	assertThat(save.getName()).isNotEmpty();
+    	assertThat(save.getEmail()).isNotEmpty();
+    	assertThat(save.getPhone()).isNotEmpty();
+    	assertThat(save.getUsername()).isNotEmpty();
+    	assertThat(save.getId()).isNotEqualTo(7);
+    	assertThat(save.toString()).isNotEmpty();
+    }
+    
+    @Test
+    public void testUserService_Call_Api_OK() throws GeneralSecurityException {   
+    	assertThat(userService.callExternalApi("1-9")).isNotEmpty();
     }
     
 }

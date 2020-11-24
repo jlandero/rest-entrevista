@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "search")
 @RestController
 @RequestMapping(EndPoint.VERSION_1 + "/search")
+
 public class SearchController {
 	
 	@Autowired
