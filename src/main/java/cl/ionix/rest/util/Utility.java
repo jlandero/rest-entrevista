@@ -55,17 +55,12 @@ public class Utility {
 			
 			JsonObject jsonObject = JsonParser.parseString(responseServices).getAsJsonObject();			
 			JsonObject resultObject = jsonObject.getAsJsonObject("result");
-			jsonObject.remove("result");
-			
-			//JsonObject elapsedTime = new JsonObject();
-			jsonObject.addProperty("elapsedTime", timeTotal);
-			
+			jsonObject.remove("result");			
+			jsonObject.addProperty("elapsedTime", timeTotal);			
 			JsonObject items = new JsonObject();
-			items.addProperty("registerCount", resultObject.getAsJsonArray("items").size());
-		
+			items.addProperty("registerCount", resultObject.getAsJsonArray("items").size());		
 			jsonObject.add("result", items);
-			return jsonObject.toString();
-			
+			return jsonObject.toString();			
 		}		
 
 }

@@ -28,6 +28,12 @@ mvn spring-boot:run
 ```
 [Swagger](http://localhost:8080/swagger-ui.html)
 ```
+### Test Unitarios
+```
+mvn clean test
+coverage en ..\rest-entrevista\target\site\jacoco\index.html
+```
+
 ### Api docs:
 ```
 http://localhost:8080/v2/api-docs
