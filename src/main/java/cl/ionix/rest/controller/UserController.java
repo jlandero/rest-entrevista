@@ -5,7 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +39,9 @@ public class UserController {
 			@ApiResponse(code = 406, message = "Not Acceptable"),
 			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping(value = "/listUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<User> list() {		
-	    return userService.allUsers();
+	public ResponseEntity<List<User>> list() {	
+		List<User> listUsers = userService.allUsers();
+	    return new ResponseEntity<>(listUsers, listUsers.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT);
 	  }
 	
 	
@@ -48,10 +51,9 @@ public class UserController {
 			@ApiResponse(code = 406, message = "Not Acceptable"),
 			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<User> email(@PathVariable("email") String email ) {
-		
-		List<User> usersFind = userService.userByEmail(email);
-	    return usersFind;
+	public ResponseEntity<List<User>> email(@PathVariable("email") String email ) {
+		List<User> listUsers = userService.userByEmail(email);
+	    return new ResponseEntity<>(listUsers, listUsers.size() > 0 ? HttpStatus.OK : HttpStatus.NO_CONTENT);
 	  }
 	
 	@ApiOperation(value = "post", notes = "Guarda nuevo usuario")
@@ -60,8 +62,8 @@ public class UserController {
 			@ApiResponse(code = 406, message = "Not Acceptable"),
 			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-	public User save(@Valid @RequestBody User user) {
-	    return userService.saveUser(user);
+	public ResponseEntity<User> save(@Valid @RequestBody User user) {
+	    return new ResponseEntity<>(userService.saveUser(user), HttpStatus.OK);
 	  }
 
 }

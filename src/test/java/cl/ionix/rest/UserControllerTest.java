@@ -1,47 +1,66 @@
 package cl.ionix.rest;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.Matchers;
+import javax.validation.ConstraintViolationException;
+
+import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import cl.ionix.rest.controller.UserController;
+import cl.ionix.rest.error.BadRequestException;
 import cl.ionix.rest.model.User;
-import cl.ionix.rest.service.impl.RestServiceImpl;
+import cl.ionix.rest.service.RestService;
 
-@WebMvcTest
+@RunWith(SpringRunner.class)
+@SpringBootTest(properties = { "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect" })
+@Sql("/test-mysql.sql")
+@AutoConfigureTestDatabase
 public class UserControllerTest {
 	
-	@Autowired
-	private MockMvc mockMvc;
+	@Mock
+	private RestService restService;
 	
-	@MockBean
-	private RestServiceImpl userService;
+	@Autowired
+	private UserController userController;
+	
+	@Test		
+	public void UserControllerTest_List_OK() {			
+		ResponseEntity<List<User>> httpResponse = userController.list();	
+		Assert.assertEquals(httpResponse.getStatusCode(), HttpStatus.OK);		
+	}	
+	
+	@Test		
+	public void UserControllerTest_Email_NO_Content() {			
+		ResponseEntity<List<User>> httpResponse = userController.email("j.landero@gmail.com");	
+		Assert.assertEquals(httpResponse.getStatusCode(), HttpStatus.NO_CONTENT);		
+	}
+
+	@Test(expected=BadRequestException.class)
+	public void UserControllerTest_Email_NOT_Valid() {			
+		userController.email("j.landero@com");	
+				
+	}
 		
 	@Test
-	public void testGetAll() throws Exception {
-		List<User> users = new ArrayList<>();
-		User user = new User();
-		user.setId(1);
-		user.setName("name");
-		user.setEmail("email");
-		user.setPhone("phone");
-		user.setUsername("username");
-		
-		users.add(user);
-		Mockito.when(userService.allUsers()).thenReturn(users);
-		mockMvc.perform(get("/user/listUsers")).andExpect(status().isOk()).andExpect(jsonPath("$", Matchers.hasSize(1)))
-				.andExpect(jsonPath("$[0].name", Matchers.equalTo("name")));
+	public void UserControllerTest_Save_OK() {			
+		User user = new User(20, "name", "username", "email@email.com", "+5699854785");
+		ResponseEntity<User> httpResponse = userController.save(user);	
+		Assert.assertEquals(httpResponse.getStatusCode(), HttpStatus.OK);		
 	}
 	
-
+	@Test(expected=ConstraintViolationException.class)
+	public void UserControllerTest_Save_NO_OK() {			
+		User user = new User(20, "name", "username", "email@.com", "+5699854785");
+		userController.save(user);			
+	}
 }

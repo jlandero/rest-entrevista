@@ -3,7 +3,9 @@ package cl.ionix.rest.controller;
 import java.security.GeneralSecurityException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +32,8 @@ public class SearchController {
 			@ApiResponse(code = 406, message = "Not Acceptable"),
 			@ApiResponse(code = 500, message = "Internal Server Error") })
 	@GetMapping(value = "/call/{rut}", produces = MediaType.APPLICATION_JSON_VALUE)	
-	public String call( @PathVariable("rut") String rut) throws GeneralSecurityException {		
-		return userService.callExternalApi(rut);
+	public ResponseEntity<String> call( @PathVariable("rut") String rut) throws GeneralSecurityException {		
+		return new ResponseEntity<>(userService.callExternalApi(rut), HttpStatus.OK);
 	  }
 
 }
