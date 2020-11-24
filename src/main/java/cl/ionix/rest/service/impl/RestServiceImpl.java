@@ -52,6 +52,10 @@ public class RestServiceImpl implements RestService{
 
 	@Override
 	public User saveUser(User user) {
+		
+		if (!Utility.validateEmail(user.getEmail()))
+			throw new BadRequestException("email invalido");
+		
 		return userRepository.save(user);
 	}
 
